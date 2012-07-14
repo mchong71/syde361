@@ -1,7 +1,6 @@
 <?php
 
 //Get COM Port
-//MADE A CHANGE!
 $link = mysql_connect("localhost", "root", "PASSWORD WORD GO HERE") or die(mysql_error());
 mysql_select_db("kiosk_map") or die(mysql_error());
 $result = mysql_query("SELECT data FROM config WHERE description='port'");

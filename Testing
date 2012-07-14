@@ -1,0 +1,18 @@
+/*Spec
+
+Inputs
+	web page interface
+	feedback from back end (state)
+
+Functions
+Determine type of input
+	Input from UI
+		Determine what box is avail
+		send signal to backend
+
+	Input from backend
+		Update state table
+		display messages on UI 
+		Receive/Delivered box or added lockers
+*/
+
