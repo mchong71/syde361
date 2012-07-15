@@ -1,0 +1,11 @@
+Create table States
+(
+	Package_ID int NOT NULL,
+	Column_ID int NOT NULL,
+	Box_ID int NOT NULL,
+	Filled int,
+	Open int,
+	Primary key (Package_ID, Column_ID, Box_ID)
+)
+	
+	
