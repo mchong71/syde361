@@ -1,6 +1,6 @@
 Create table States
 (
-	Package_ID int NOT NULL,
+	Package_ID int,
 	Column_ID int NOT NULL,
 	Box_ID int NOT NULL,
 	Filled int, #1 for filled 0 for unfilled

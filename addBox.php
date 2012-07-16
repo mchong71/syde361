@@ -26,18 +26,10 @@ function addBox($numOfBox, $sizeArr) {
 	{
 		$boxNum = $i + 1;
 		$new_ID = $max_ID + 1;
-		mysql_query("Insert into States values (1111," . $new_ID . "," . $boxNum . ",0,0," . $sizeArr[$i] . ")"); 
+		mysql_query("Insert into States values (0," . $new_ID . "," . $boxNum . ",0,0," . $sizeArr[$i] . ")"); 
 	}
 
 }
-
-function pickUp
-/*function get_States(){
-	$q = "Select box_Id, state From states"; 
-	$result = mysql_query($q);
-	$box = mysql_fetch_array($result);
-	echo ($box['box_Id'] . "s " . $box['state'] . " ");
-}*/
 
 function get_SQLarray($query){
 	$result = mysql_query($query);
@@ -48,9 +40,7 @@ function get_SQLarray($query){
 </head>
 <body class="page_bg">
 
-
 <Input type = 'button' Name = 'button1' onclick = "<? addBox(5, $sizeArr) ?>" Value = "Add box"/>
-<!--<Input type = 'button' Name = 'button2' onclick = "<? get_States() ?>" Value = "Get States"/>/-->
 
 </body>
 </html>
