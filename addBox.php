@@ -3,12 +3,12 @@
 
 <?php
 
-include 'serial.php';
+include 'messaging.php';
 
-$serial = new serial();
+$serial = new messaging();
+//sends message to backend telling them to expect a new locker
+$serial->writeMsg("N");
 $sizArr = $serial->readMsg();
-
-$sizeArr = array(0 => 1, 1 => 1, 2 => 1, 3 => 2, 4 =>2);
 
 //Get COM Port
 	$dbhost = "localhost";
@@ -19,8 +19,9 @@ $sizeArr = array(0 => 1, 1 => 1, 2 => 1, 3 => 2, 4 =>2);
 	mysql_select_db("kiosk_map") or die(mysql_error());
 
 	
-function addBox($numOfBox, $sizeArr) {
+function addBox($sizeArr) {
 
+	$numOfBox = Count($sizeArr);
 	//get the next available column_ID
 	// HAVE TO REFRESH PAGE TO GET THE NEW MAX
 	$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States");
@@ -48,7 +49,7 @@ function get_SQLarray($query){
 
 <!-- addBox could only take in an array where the first element is the number of
 		boxes the next elements are the corresponding sizes -->
-<Input type = 'button' Name = 'button1' onclick = "<? addBox(5, $sizeArr) ?>" Value = "Add box"/>
+<Input type = 'button' Name = 'button1' onclick = "<? addBox($sizeArr) ?>" Value = "Add box"/>
 You have successfully added <? $numOfBox ?> boxes.
 
 </body>

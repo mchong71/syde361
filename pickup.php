@@ -47,18 +47,21 @@ function checkBox($packageID){
 		return True;	
 }
 
-// method that returns true if the user successfully opens door picks up package and closes door
+// method that returns true if box is unfilled and door is closed
 function success($packageID) {
 	
 	$box = get_SQLarray("SELECT Column_ID, Box_ID FROM States WHERE Package_ID = '" . $packageID);
 	$serial->writeMsg("U", $box['Column_ID'] . $box['Box_ID']);
-	$serial->writeMsg("SL", $box['Column_ID'] . $box['Box_ID']);
+	$serial->writeMsg("L", $box['Column_ID'] . $box['Box_ID']);
 	$limitResult = $serial->readMsg();
-	$serial->writeMsg("SS", $box['Column_ID'] . $box['Box_ID']);
+	$serial->writeMsg("S", $box['Column_ID'] . $box['Box_ID']);
 	$sensorResult = $serial->readMsg();
 	
-	if //stats messages check)
+	if ($limitResult == 0 && $sensorResult == 0) //stats messages check)
 		return True;
+	else if($limitResult == 0 && $sensorResult == 1)
+		die();
+		
 }
 function get_SQLarray($query){
 	$result = mysql_query($query);

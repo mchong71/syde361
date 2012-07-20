@@ -19,11 +19,11 @@ class messaging
 		}
 		
 		return messaging::$instance;
-	}*/
-		/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
-		s: returns 2 bytes + null, MSB, forms unsigned num: 0-1023
-		l: returns 2 bytes + null, MSB, forms unsigned num: 0-1023
-		n: returns byte with number of boxes in column, end padded with zeros
+	}
+	
+	/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
+		s: returns 2 bytes + null, MSB, forms unsigned num: 0-1023 threshold value
+		l: returns 2 bytes + null, MSB, forms unsigned num: 0-1023 anything not zero is open
 		d: returns byte array of box sizes
 	*/
 	public function readMsg()
@@ -38,7 +38,34 @@ class messaging
 	    
 		do 
 		{
-			$result = $serial->readPort();
+			$data = $serial->readPort();
+		} while ($result != chr(10));
+		
+		$arr = str_split($data);
+		$resultID = $arr[0];
+		
+		if ($resultID = "s")
+		{
+			if($arr[1] <= $threshold) 
+				$result = 0; // Unfilled
+			else 
+				$result = 1; // Filled
+		}
+		else if ($resultID = "l")
+		{
+			if($arr[1] == 0) 
+				$result = 0; // Locked
+			else 
+				$result = 1; // Unlocked
+		}
+		else ($resultID = "d")
+		{
+			for($i = 0; $i < count($arr) && $arr[$i] =! 0; $i++)
+			{
+				$result[$i] = $arr[$i+1]; // Data starts at element 1
+			}
+		}
+		return $result;
 		} while ($result != chr(10));
 
 		$serial->deviceClose();
