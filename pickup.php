@@ -30,14 +30,15 @@ function checkBox($packageID){
 	// check to make sure the package exists within the box.
 	if ($box['Count'] == 0)
 	{
-		die("The package" . $packageID . " you are trying to pick up does not exist!");
+		die("ERROR: The package: " . $packageID . " you are trying to pick up does not exist!<br>
+				Check to make sure you entered the ID correctly.");
 		return False;
 	}
 	
 	// check to make sure the box the package is in has a package in it
 	if ($box['Filled'] == 0)
 	{
-		die("There doesn't appear to be the package:" . $packageID . " in the box. Please contact BB");
+		die("ERROR: There doesn't appear to be the package: " . $packageID . " in the box. Please contact BB");
 		return False;
 	}
 		return True;

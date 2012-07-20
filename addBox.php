@@ -40,6 +40,8 @@ function get_SQLarray($query){
 </head>
 <body class="page_bg">
 
+<!-- addBox could only take in an array where the first element is the number of
+		boxes the next elements are the corresponding sizes -->
 <Input type = 'button' Name = 'button1' onclick = "<? addBox(5, $sizeArr) ?>" Value = "Add box"/>
 
 </body>
