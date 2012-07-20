@@ -3,6 +3,11 @@
 
 <?php
 
+include 'serial.php';
+
+$serial = new serial();
+$sizArr = $serial->readMsg();
+
 $sizeArr = array(0 => 1, 1 => 1, 2 => 1, 3 => 2, 4 =>2);
 
 //Get COM Port
@@ -37,12 +42,14 @@ function get_SQLarray($query){
 	return $array;
 }
 ?>
+
 </head>
 <body class="page_bg">
 
 <!-- addBox could only take in an array where the first element is the number of
 		boxes the next elements are the corresponding sizes -->
 <Input type = 'button' Name = 'button1' onclick = "<? addBox(5, $sizeArr) ?>" Value = "Add box"/>
+You have successfully added <? $numOfBox ?> boxes.
 
 </body>
 </html>

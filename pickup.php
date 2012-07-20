@@ -3,6 +3,10 @@
 
 <?php
 
+include 'serial.php';
+
+$serial = new serial();
+
 //Get COM Port
 	$dbhost = "localhost";
 	$dbname = "kiosk_map";
@@ -20,8 +24,7 @@ function pickup($packageID) {
 			mysql_query("Update States Set Filled = 0 Where Package_ID = " . $packageID);
 			echo ("Congrats you picked up your mother fucking package");
 		}
-	}
-		
+	}	
 }
 
 function checkBox($packageID){
@@ -41,13 +44,21 @@ function checkBox($packageID){
 		die("ERROR: There doesn't appear to be the package: " . $packageID . " in the box. Please contact BB");
 		return False;
 	}
-		return True;
-	
+		return True;	
 }
 
 // method that returns true if the user successfully opens door picks up package and closes door
-function success() {
-	return True;
+function success($packageID) {
+	
+	$box = get_SQLarray("SELECT Column_ID, Box_ID FROM States WHERE Package_ID = '" . $packageID);
+	$serial->writeMsg("U", $box['Column_ID'] . $box['Box_ID']);
+	$serial->writeMsg("SL", $box['Column_ID'] . $box['Box_ID']);
+	$limitResult = $serial->readMsg();
+	$serial->writeMsg("SS", $box['Column_ID'] . $box['Box_ID']);
+	$sensorResult = $serial->readMsg();
+	
+	if //stats messages check)
+		return True;
 }
 function get_SQLarray($query){
 	$result = mysql_query($query);
