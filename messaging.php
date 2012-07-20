@@ -26,22 +26,23 @@ class messaging
 		n: returns byte with number of boxes in column, end padded with zeros
 		d: returns byte array of box sizes
 	*/
-	function readMsg()
+	public function readMsg()
 	{
 		$serial = new phpSerial();
-		$serial->deviceSet($com_string);
+		$serial->deviceSet('/dev/cu.usbmodem621');
 		$serial->confBaudRate(9600); //Baud rate: 9600 
 	 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
 	    $serial->confCharacterLength(8); //Character length 
 	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
 	    $serial->deviceOpen();
-	
+	    
 		do 
 		{
 			$result = $serial->readPort();
 		} while ($result != chr(10));
-		
+
 		$serial->deviceClose();
+		
 		return $result;
 	}
 	
@@ -51,10 +52,8 @@ class messaging
 		L: Limit Switch Status
 		N: New Column Address
 	*/
-	function writeMsg($msgType, $boxID)
+	public function writeMsg($msgType, $compartment)
 	{
-		$str = $msgType . $boxID . chr(10);
-		
 		$serial = new phpSerial();
 		$serial->deviceSet('/dev/cu.usbmodem621');
 		$serial->confBaudRate(9600); //Baud rate: 9600 
@@ -62,13 +61,10 @@ class messaging
 	    $serial->confCharacterLength(8); //Character length 
 	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
 	    $serial->deviceOpen();
+	    
+		$str = $msgType . $compartment . chr(10);
+		
 		$serial->sendMessage($str);
-		$serial->deviceClose();
-	}
-	
-	function portClose()
-	{
-	
 		$serial->deviceClose();
 	}
 }
