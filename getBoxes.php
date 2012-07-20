@@ -77,60 +77,49 @@ function get_Size($size) {
 	$serial->deviceSet($com_string);
 		
 	$serial->confBaudRate(9600); //Baud rate: 9600 
-	echo "yy";
     $serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
-    echo "yys"; 
     $serial->confCharacterLength(8); //Character length 
-    echo "yya";
     $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
-    echo "yyw";
     //$serial->confFlowControl("none");
-    echo "yye";
 	//Device does not support flow control of any kind, 
 	//so set it to none. 
 	
     //Now we "open" the serial port so we can write to it 
     $serial->deviceOpen(); 
 	
-	////
+	////--------------------
 	
-	echo 'yes1';
-	/*exec('mode ' . $com_string . ': baud=9600 data=8 stop=1 parity=n xon=on');
-	echo 'yes2';
-	$fd = dio_open($com_string, O_RDWR);
-	echo 'yes3';
-	if(!$fd)
-	{
-    	die("Error when open " . $com_string);
-	}
+	$serial->sendMessage("U" . $selectedComp .chr(10));
 	
-	echo 'yes4';
+	echo 'Message has been Sent!';
 	
-	// Writing to the serial line
-	dio_write ($fd , "unlock:" . $selectedComp);
-	dio_write ($fd , chr(13).chr(10));
-*/
-	
-	$serial->sendMessage("U" . $selectedComp);
-	
-	echo 'wrote to line';
-/*	
-$door_opened = 0;
+	$door_opened = 0;
 
+//They loop this 20 times to allow for any errors. Look into a better way to do this
 $i=0;
 while($i < 20)
 {
-    $data = bb_read($fd);
+	//Wait for response from arduino's
+    $data = readMsg();
 
     if($data)
     {
         $data = trim($data);
 
-        if($data == "opened:" . $selectedComp)
+        if($data == "O" . $selectedComp)
         {
             $door_opened = 1;
 
-            /*mysql_connect("localhost", "root", "") or die(mysql_error());
+			$query = sprintf("SELECT * From States WHERE Size='" .$packIntSize. "' && Filled='0' LIMIT 1");
+			$result = mysql_query($query);
+	
+			if (!$result) {
+    			$message  = 'Invalid query: ' . mysql_error() . "\n";
+	    		$message .= 'Whole query: ' . $query;
+    			die($message);
+			} 
+
+            mysql_connect("localhost", "root", "") or die(mysql_error());
             mysql_select_db("kiosk_map") or die(mysql_error());
 
             //Remove the parcel from the kiosk_map local DB
@@ -159,18 +148,18 @@ while($i < 20)
 
             break;
         }
-        elseif($data == "closed:" . $selectedComp)
+        elseif($data == "C" . $selectedComp)
         {
-            dio_write ($fd , "unlock:" . $selectedComp);
-            dio_write ($fd , chr(13).chr(10));
+        	$serial->sendMessage("U" . $selectedComp .chr(10));
         }
         elseif($data == "OK")
         {
         }
     }
 
-    dio_write ($fd , "status:" . $selectedComp);
-    dio_write ($fd , chr(13).chr(10));
+	//This looks like it is querying for the boxes status. Update this.
+    //dio_write ($fd , "status:" . $selectedComp);
+    //dio_write ($fd , chr(13).chr(10));
 
     usleep(100000);
     $i++;
@@ -188,7 +177,7 @@ if(!$door_opened)
     if($conn)
     {
 
-        /*Email uwaterloo@bufferbox.com to say that the door failed to open/
+        /*Email uwaterloo@bufferbox.com to say that the door failed to open*/
 
        require("phpmailer/class.phpmailer.php");
 
@@ -232,62 +221,10 @@ if(!$door_opened)
         $mail->ClearAddresses();
 
         smtpmailer($mail, $to, $from, $from_name, $subject, $body);
-    }
-}
+    	}
+	}
 
-//Close the serial port
-dio_close($fd);
-	// Use result
-	// Attempting to print $result won't allow access to information in the resource
-	// One of the mysql result functions must be used
-	// See also mysql_result(), mysql_fetch_array(), mysql_fetch_row(), etc.
-	/*while ($row = mysql_fetch_assoc($result)) {
-	   echo $row['firstname'];
-    	echo $row['lastname'];
-	    echo $row['address'];
-	    echo $row['age'];
-	}*/
-//	CreateBoxTable($result);
-
-	// Free the resources associated with the result set
-	// This is done automatically at the end of the script
-	//mysql_free_result($result);
-
-//}
-
-//function CreateBoxTable($result) {
-	/*while ($row = mysql_fetch_assoc($result)) {
-		$boxVals = 'Col: '.$row['Column_ID'].' | Box: '.$row['Box_ID'];
-		
-		if($row['Filled']=='1') {
-			<form>
-				<input type="button" value="$boxVals" enabled onClick="<? bb_OpenAction() ?>"/>
-			</form>
-			echo $boxVals . ' | FILLED!!!';
-		} else {
-			/*<form>
-				<input type="button" value="$boxVals" onClick="<? bb_OpenAction() ?>"/>
-			</form>
-			echo $boxVals . ' | UNFILLED!!!';
-		}
-		
-	}*/
-
-
-mysql_free_result($result);
-
-/*function bb_OpenAction() {
-	echo "<script type='text/javascript'>alert('Really annoying pop-up!');</script>";
-	//echo("This worked!");
-	//Takes input from UI, barcode, or other input and selects box from db
-	//bb_SelectBox($id);
-		
-	//bb_Send($msg);
-	//bb_send should return a bool with status if sent or not
-
-	//bb_Update($boxinfoandupdateinfo);
-	//bb_update will change state of box in db
-}*/
+	mysql_free_result($result);
 }		
 ?>
 </head>
