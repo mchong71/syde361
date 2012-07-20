@@ -25,6 +25,7 @@ Determine type of input
 // Reposible for the entire opening box action (Open Controller)
 function bb_OpenAction() {
 	echo("This worked!");
+	//echo "<script type='text/javascript'>alert('Really annoying pop-up!');</script>";
 	//Takes input from UI, barcode, or other input and selects box from db
 	//bb_SelectBox($id);
 	
