@@ -3,36 +3,24 @@ include 'php_serial.php';
 
 class messaging
 {
-	$portCreated = false;
+	private static $com_string = '/dev/cu.usbmodem621';
 	/* function will query the serial port until it returns a value.
 		Nothing else can happen while querying the port.
 	*/
 	
-	function messaging() 
+	/*function getInstance() 
 	{
 		//the first time this class is instantiated the port will be setup. Otherwise do nothing
-		if(!$portCreated) {
-			// if os is linux /dev/ttys0 FIX THIS LATER
-			var $com_string = '/dev/cu.usbmodem621';
-			$serial = new phpserial();
-			$serial->deviceSet($com_string);
-			
-			$serial->confBaudRate(9600); //Baud rate: 9600 
-   		 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
-		    $serial->confCharacterLength(8); //Character length 
-		    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
-		    //$serial->confFlowControl("none");
-			//Device does not support flow control of any kind, 
-			//so set it to none. 
-	
+		if(!messaging::$instance = instanceof self) {
+			messaging::$instance = new self();
+
 	  		//Now we "open" the serial port so we can write to it 
-		    $serial->deviceOpen();
-		    
-		    //successful open of port
-		    $portCreated = true;
-	    }
-	}
-	/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
+		   messaging::$serial->deviceOpen();
+		}
+		
+		return messaging::$instance;
+	}*/
+		/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
 		s: returns 2 bytes + null, MSB, forms unsigned num: 0-1023
 		l: returns 2 bytes + null, MSB, forms unsigned num: 0-1023
 		n: returns byte with number of boxes in column, end padded with zeros
@@ -40,11 +28,20 @@ class messaging
 	*/
 	function readMsg()
 	{
+		$serial = new phpSerial();
+		$serial->deviceSet($com_string);
+		$serial->confBaudRate(9600); //Baud rate: 9600 
+	 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
+	    $serial->confCharacterLength(8); //Character length 
+	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
+	    $serial->deviceOpen();
+	
 		do 
 		{
 			$result = $serial->readPort();
 		} while ($result != chr(10));
 		
+		$serial->deviceClose();
 		return $result;
 	}
 	
@@ -54,14 +51,24 @@ class messaging
 		L: Limit Switch Status
 		N: New Column Address
 	*/
-	function writeMsg ($msgType, $boxID, $waitForReply = 0.1)
+	function writeMsg($msgType, $boxID)
 	{
 		$str = $msgType . $boxID . chr(10);
-		$serial->sendMessage($str, $waitForReply);
+		
+		$serial = new phpSerial();
+		$serial->deviceSet('/dev/cu.usbmodem621');
+		$serial->confBaudRate(9600); //Baud rate: 9600 
+	 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
+	    $serial->confCharacterLength(8); //Character length 
+	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
+	    $serial->deviceOpen();
+		$serial->sendMessage($str);
+		$serial->deviceClose();
 	}
 	
 	function portClose()
 	{
+	
 		$serial->deviceClose();
 	}
 }
