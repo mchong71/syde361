@@ -3,9 +3,7 @@
 
 <?php
 
-include 'serial.php';
-
-$serial = new serial();
+include 'messaging.php';
 
 //Get COM Port
 	$dbhost = "localhost";
@@ -19,9 +17,9 @@ $serial = new serial();
 function pickup($packageID) {
 	if (checkBox($packageID))
 	{
-		if(success())
+		if(success($packageID))
 		{
-			mysql_query("Update States Set Filled = 0 Where Package_ID = " . $packageID);
+			//mysql_query("Update States Set Filled = 0 Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
 			echo ("Congrats you picked up your mother fucking package");
 		}
 	}	
@@ -29,7 +27,8 @@ function pickup($packageID) {
 
 function checkBox($packageID){
 
-	$box = get_SQLarray("SELECT COUNT(Package_ID) as Count, Filled From States Where Package_ID = '" . $packageID . "'");
+	$box = get_SQLarray("SELECT COUNT(Package_ID) as Count, Filled From States Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
+	echo $box['Count'];
 	// check to make sure the package exists within the box.
 	if ($box['Count'] == 0)
 	{
@@ -49,22 +48,27 @@ function checkBox($packageID){
 
 // method that returns true if box is unfilled and door is closed
 function success($packageID) {
+	$box = get_SQLarray("SELECT Column_ID, Box_ID FROM States WHERE Package_ID = '" . mysql_real_escape_string($packageID) . "'");
+	$compartment = $box['Column_ID'].$box['Box_ID'];
 	
-	$box = get_SQLarray("SELECT Column_ID, Box_ID FROM States WHERE Package_ID = '" . $packageID);
-	$serial->writeMsg("U", $box['Column_ID'] . $box['Box_ID']);
-	$serial->writeMsg("L", $box['Column_ID'] . $box['Box_ID']);
+	$serial = new messaging;
+	$serial->writeMsg("U", $compartment);
+	$serial->writeMsg("L", $compartment);
 	$limitResult = $serial->readMsg();
-	$serial->writeMsg("S", $box['Column_ID'] . $box['Box_ID']);
+	$serial->writeMsg("S", $compartment);
 	$sensorResult = $serial->readMsg();
 	
 	if ($limitResult == 0 && $sensorResult == 0) //stats messages check)
 		return True;
 	else if($limitResult == 0 && $sensorResult == 1)
 		die();
+	return true;
 		
 }
 function get_SQLarray($query){
 	$result = mysql_query($query);
+	if(!$result)
+	{echo $result;}
 	$array = mysql_fetch_array($result);
 	return $array;
 }
