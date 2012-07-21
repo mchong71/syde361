@@ -19,7 +19,7 @@ function pickup($packageID) {
 	{
 		if(success($packageID))
 		{
-			//mysql_query("Update States Set Filled = 0 Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
+			mysql_query("Update States Set Filled = 0 Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
 			echo ("Congrats you picked up your mother fucking package");
 		}
 	}	
@@ -28,7 +28,6 @@ function pickup($packageID) {
 function checkBox($packageID){
 
 	$box = get_SQLarray("SELECT COUNT(Package_ID) as Count, Filled From States Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
-	echo $box['Count'];
 	// check to make sure the package exists within the box.
 	if ($box['Count'] == 0)
 	{
