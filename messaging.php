@@ -1,6 +1,8 @@
 <?php
 include 'php_serial.php';
 
+$_THRESH = 250;
+
 class messaging
 {
 	private static $com_string = '/dev/cu.usbmodem621';
@@ -28,6 +30,7 @@ class messaging
 	*/
 	public function readMsg()
 	{
+		global $_THRESH;
 		$serial = new phpSerial();
 		$serial->deviceSet('/dev/cu.usbmodem621');
 		$serial->confBaudRate(9600); //Baud rate: 9600 
@@ -39,38 +42,38 @@ class messaging
 		do 
 		{
 			$data = $serial->readPort();
-		} while ($result != chr(10));
+			//$arr = preg_split("/[\s,]+/", $data);
+		} while (!preg_match("/[\s,]+/", $data));
 		
 		$arr = str_split($data);
 		$resultID = $arr[0];
+		$result = -1;
 		
-		if ($resultID = "s")
+		if ($resultID == "s")
 		{
-			if($arr[1] <= $threshold) 
+			if($arr[1] <= $_THRESH)
 				$result = 0; // Unfilled
 			else 
 				$result = 1; // Filled
 		}
-		else if ($resultID = "l")
+		elseif ($resultID == "l")
 		{
-			if($arr[1] == 0) 
+			if($arr[1] == "0") 
 				$result = 0; // Locked
 			else 
 				$result = 1; // Unlocked
 		}
-		else ($resultID = "d")
+		elseif ($resultID == "d")
 		{
 			for($i = 0; $i < count($arr) && $arr[$i] =! 0; $i++)
 			{
 				$result[$i] = $arr[$i+1]; // Data starts at element 1
 			}
 		}
-		return $result;
-		} while ($result != chr(10));
-
-		$serial->deviceClose();
 		
 		return $result;
+		$serial->deviceClose();
+		
 	}
 	
 	/* msgType indicates the type of message being sent
