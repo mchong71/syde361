@@ -100,6 +100,8 @@ function doorClosed() {
 		} else {
 			echo "\n\n\nPackage has been successfully dropped";
 		}
+		
+		mysql_free_result($result);
 	}
 }
 
