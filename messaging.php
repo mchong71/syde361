@@ -1,7 +1,7 @@
 <?php
 include 'php_serial.php';
 
-$_THRESH = 250;
+$_THRESH = -1;
 
 class messaging
 {
@@ -38,7 +38,7 @@ class messaging
 	    $serial->confCharacterLength(8); //Character length 
 	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
 	    $serial->deviceOpen();
-	    
+	    $serial->serialflush();
 		do 
 		{
 			$data = $serial->readPort();

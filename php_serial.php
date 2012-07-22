@@ -513,8 +513,8 @@ class phpSerial
 			else
 			{
 				do {
-					$content .= fread($this->_dHandle, 128);
-				} while (($i += 128) === strlen($content));
+					$content .= fread($this->_dHandle, 4);
+				} while (($i += 4) === strlen($content));
 			}
 
 			return $content;
