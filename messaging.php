@@ -42,22 +42,8 @@ class messaging
 			$data .= $this->_SERIAL->readPort();
 		}
 		
-<<<<<<< HEAD
-<<<<<<< HEAD
-		//return $data.$i;
-		$arr = str_split($data);
-=======
 		return $data."--".$i;
 		/*$arr = str_split($data);
->>>>>>> updates to messaging. Added error page
-=======
-		return $data."--".$i;
-		/*$arr = str_split($data);
-=======
-		//return $data.$i;
-		$arr = str_split($data);
->>>>>>> 39033c2de676159ae57d6192884f628bf18861d4
->>>>>>> conflicts?
 		$resultID = $arr[0];
 		
 		if ($resultID == "s")
@@ -91,24 +77,7 @@ class messaging
 		elseif ($resultID == "t")
 		{
 			$result= $arr[1]; // returns the size of queried box
-<<<<<<< HEAD
-<<<<<<< HEAD
 		}
-		
-		return $result;
-		$this->_SERIAL->deviceClose();
-=======
-		}	
->>>>>>> updates to messaging. Added error page
-=======
-		}	
-=======
-		}
-		
-		return $result;
-		$this->_SERIAL->deviceClose();
->>>>>>> 39033c2de676159ae57d6192884f628bf18861d4
->>>>>>> conflicts?
 		
 		return $result;*/		
 	}
