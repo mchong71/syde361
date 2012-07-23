@@ -4,12 +4,14 @@
 
  <p><b><big>Welcome to BufferBox</b></big></p>
 
-<p>Please select one of the following options:</p>
+<p>Please select one of the following options:</p></br></br>
 
-
-<FORM>
-<INPUT TYPE="BUTTON" VALUE="Stock Bufferbox" ONCLICK="window.location.href='http://www.computerhope.com'"> 
+<p>Input package attributes and submit form.</p></br>
+<FORM action="getBoxes.php" method="post">
+	Box Size (S/M/L):<input type="text" name="pSize"  />
+	<INPUT TYPE="submit" VALUE="Dropoff"> 
 </FORM>
+
 <FORM>
 <INPUT TYPE="BUTTON" VALUE="Retrieve a Package" ONCLICK="window.location.href='http://www.computerhope.com'"> 
 </FORM>
