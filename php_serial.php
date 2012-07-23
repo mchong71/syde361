@@ -244,7 +244,7 @@ class phpSerial
 			{
                 $ret = $this->_exec("stty -F " . $this->_device . " " . (int) $rate, $out);
             }
-            if ($this->_os === "darwin")
+            elseif ($this->_os === "osx")
             {
                 $ret = $this->_exec("stty -f " . $this->_device . " " . (int) $rate, $out);
             }
@@ -292,6 +292,10 @@ class phpSerial
 		if ($this->_os === "linux")
 		{
 			$ret = $this->_exec("stty -F " . $this->_device . " " . $args[$parity], $out);
+		} 
+		elseif ($this->_os === "osx") 
+		{ 
+			$ret = $this->_exec("stty -f " . $this->_device . " " . $args[$parity], $out);
 		}
 		else
 		{
@@ -328,6 +332,10 @@ class phpSerial
 		if ($this->_os === "linux")
 		{
 			$ret = $this->_exec("stty -F " . $this->_device . " cs" . $int, $out);
+		}
+		elseif($this->_os === "osx")
+		{
+			$ret = $this->_exec("stty -f " . $this->_device . " cs" . $int, $out);
 		}
 		else
 		{
@@ -367,6 +375,10 @@ class phpSerial
 		if ($this->_os === "linux")
 		{
 			$ret = $this->_exec("stty -F " . $this->_device . " " . (($length == 1) ? "-" : "") . "cstopb", $out);
+		}
+		elseif($this->_os === "osx")
+		{
+			$ret = $this->_exec("stty -f " . $this->_device . " " . (($length == 1) ? "-" : "") . "cstopb", $out);
 		}
 		else
 		{

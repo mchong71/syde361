@@ -15,6 +15,7 @@ class messaging
 		$this->_SERIAL->confParity("none");  //Parity (this is the "N" in "8-N-1")
 		$this->_SERIAL->confCharacterLength(8); //Character length 
 		$this->_SERIAL->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
+		$this->_SERIAL->deviceOpen();
 	}
 	
 	/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
@@ -25,23 +26,29 @@ class messaging
 	public function readMsg()
 	{
 		global $_THRESH;
-		$result = -1;
 		
-	    //if(!$this->_SERIAL->deviceOpen()) { return $result;
-	    $this->_SERIAL->deviceOpen();
-	    //$serial->serialflush();
+		if($this->_SERIAL->_ckOpened() == false) { return "fail";}
+		$this->_SERIAL->serialflush();
+		
+		$result = -1;
 		$data = "";
 		$i = 0;
+		
 		while (!preg_match("/[\s,]+/", $data))
 		{
+			if($i >=75000) {break;}
+		
 			$i++;
-			usleep(250);
-			$data = $this->_SERIAL->readPort();
-			//$arr = preg_split("/[\s,]+/", $data);
+			$data .= $this->_SERIAL->readPort();
 		}
 		
+<<<<<<< HEAD
 		//return $data.$i;
 		$arr = str_split($data);
+=======
+		return $data."--".$i;
+		/*$arr = str_split($data);
+>>>>>>> updates to messaging. Added error page
 		$resultID = $arr[0];
 		
 		if ($resultID == "s")
@@ -75,11 +82,16 @@ class messaging
 		elseif ($resultID == "t")
 		{
 			$result= $arr[1]; // returns the size of queried box
+<<<<<<< HEAD
 		}
 		
 		return $result;
 		$this->_SERIAL->deviceClose();
+=======
+		}	
+>>>>>>> updates to messaging. Added error page
 		
+		return $result;*/		
 	}
 
 	/* msgType indicates the type of message being sent
@@ -90,19 +102,22 @@ class messaging
 	*/
 	public function writeMsg($msgType, $compartment = -1)
 	{
-		
-	    //if(!$this->_SERIAL->deviceOpen()) {return false;}
-	    $this->_SERIAL->deviceOpen();
+	    if($this->_SERIAL->_ckOpened() == false) { return "fail";}
 	    $str;
 	    
 	    if ($compartment == -1) {
-	    	$str .= $msgType. chr(10);}
-	    else {
-			$str .= $msgType . $compartment . chr(10); }
+	    	$str .= $msgType. chr(10);
+	    } else {
+			$str = $msgType . $compartment; 
+		}
 	
-		
 		$this->_SERIAL->sendMessage($str);
-		$this->_SERIAL->deviceClose();
+	}
+	
+	public function closeDevice() {
+		if($this->_SERIAL->_ckOpened()) { 
+			$this->_SERIAL->deviceClose();
+		}
 	}
 }
 ?>
