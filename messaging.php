@@ -41,7 +41,7 @@ class messaging
 		}
 		
 		return $data.$i;
-		/*$arr = str_split($data);
+		$arr = str_split($data);
 		$resultID = $arr[0];
 		
 		if ($resultID == "s")
@@ -60,29 +60,54 @@ class messaging
 		}
 		elseif ($resultID == "d")
 		{
-			for($i = 0; $i < count($arr) && $arr[$i] =! 0; $i++)
-			{
-				$result[$i] = $arr[$i+1]; // Data starts at element 1
-			}
+			$result = $arr;
 		}
+		elseif ($resultID == "a")
+		{
+			foreach ($i = 1; $i < Count($arr); $i++)
+			{
+				if($arr[$i] == "0")
+					$result = true; // message was confirmed
+				else 
+					$result = false; // message was not confirmed
+				}
+		}
+		elseif ($resultID == "n")
+		{
+			if($arr[1] != "0")
+				$result = $arr[1]; // new column was found return the number of boxes
+			else 
+				$result = -1; // new column was not found 
+				
+		}
+		elseif ($resultID == "t")
+		{
+			$result= $arr[1]; // returns the size of queried box
+		}		
 		
-		return $result;*/
+		return $result;
 		$this->_SERIAL->deviceClose();
 		
 	}
-	
+
 	/* msgType indicates the type of message being sent
 		U: Unlock
 		S: Sensor/Analog Status
 		L: Limit Switch Status
 		N: New Column Address
 	*/
-	public function writeMsg($msgType, $compartment)
+	public function writeMsg($msgType, $compartment = -1)
 	{
 		
 	    //if(!$this->_SERIAL->deviceOpen()) {return false;}
 	    $this->_SERIAL->deviceOpen();
-		$str = $msgType . $compartment . chr(10);
+	    $str;
+	    
+	    if ($compartment == -1) {
+	    	$str .= $msgType. chr(10);}
+	    else {
+			$str .= $msgType . $compartment . chr(10); }
+	
 		
 		$this->_SERIAL->sendMessage($str);
 		$this->_SERIAL->deviceClose();
