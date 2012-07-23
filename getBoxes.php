@@ -49,24 +49,28 @@ function get_Size($size) {
 	} 
 	
 	$resultArr = mysql_fetch_array($result);
-	$_COL = $resultArr['Column_ID'];
-	$_BOX = $resultArr['Box_ID'];
-	$_COMPARTMENT = $_BOX . $_COL;
+	$_COL = 5;//$resultArr['Column_ID'];
+	$_BOX = 1;//$resultArr['Box_ID'];
+	$_COMPARTMENT = $_COL . $_BOX;
 
-	echo ($_COMPARTMENT);
+	echo $_COMPARTMENT."</br></br>";
 
 	// set up serial connection
-	//if(!$_SERIAL->writeMsg("U", $_COMPARTMENT)) { echo "failed";}
+	if(!$_SERIAL->writeMsg("U", $_COMPARTMENT)) { echo "failed";}
 	//else { echo "writing worked";}
-	$_SERIAL->writeMsg("U", $_COMPARTMENT);
-	echo 'Message has been Sent!';
-	packageProcessing();	
+	//$_SERIAL->writeMsg("U", $_COMPARTMENT);
+	//echo 'Message has been Sent!';
+	//packageProcessing();	
 	
+	$_SERIAL->writeMsg("L", $_COL, $_BOX);
+	$test = $_SERIAL->readMsg();
+	//echo "this is a test: " . $test;
+	//echo '<META HTTP-EQUIV="Refresh" Content="0; URL=http://localhost/ErrorPage.html">';
 	//free the result
 	mysql_free_result($result);
 }
 
-function doorClosed() {
+/*function doorClosed() {
 	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
 	$_SERIAL->writeMsg("S", $_COMPARTMENT);
 	$sensorData = $_SERIAL->readMsg();
@@ -90,7 +94,7 @@ function doorClosed() {
 	   		$message .= 'Whole query: ' . $query;
     		die($message);
 		} else {
-			echo "</br>Package has been successfully dropped";
+			echo "</br></br>Package has been successfully dropped";
 		}
 		
 		mysql_free_result($result);
@@ -114,24 +118,27 @@ function packageProcessing() {
 			$_SERIAL->writeMsg("L", $_COMPARTMENT);
 			echo "checked for limit";
 			$limitData = $serialp->readMsg();
-		}*/
+		}*
 		
 		//ensure door is closed
 		if($limitData == 0) {
-			//doorClosed();
+			echo "closeys";
+			doorClosed();
 		} else {
 			die("DOOR CLOSE FAIL");
 		}
 	} else {
 		die("FATAL ERROR!");
 	}
-}
+}*/
 		
 ?>
 </head>
-<body>
-	<?php
-		get_Size($_POST["pSize"]);
-	?>
+<body style="background-color:#000; margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" >
+	<div style="border:1px solid #fff; padding:10px;">
+		<?php
+			get_Size($_POST["pSize"]);
+		?>
+	</div>
 </body>
 </html>
