@@ -20,21 +20,29 @@ function addBox() {
 	$serial = new messaging;
 	//sends message to backend telling them to expect a new locker
 	$serial->writeMsg("N");
-	$sizeArr = $serial->readMsg();
-	$numOfBox = Count($sizeArr);
-	//get the next available column_ID
-	// HAVE TO REFRESH PAGE TO GET THE NEW MAX
-	$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States");
-	$max_ID = $column_ID['Column_ID'];
-	//inserts all the new boxes into the database. Box_ID is 1 based
-	for ($i = 1; $i < $numOfBox; $i++)
+	$numOfBox = $serial->readMsg();
+	if($numOfBox != -1)
 	{
-		$boxNum = $i + 1;
-		$new_ID = $max_ID + 1;
-		mysql_query("Insert into States values (0," . $new_ID . "," . $boxNum . ",0,0," . $sizeArr[$i] . ")"); 
+		$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States")
+		$new_ID = $column_ID + 1;
+		serial->writeMsg("A", $new_ID); // sends next available column id for addressing
+		if($serial->readMsg()) // address was successfully assigned
+		{
+			$count = 0;
+			for($i = 0; $i < $numOfBox; $i++)
+			{
+				// get data on each individual box. For future could ask for limit and sensor data
+				serial->writeMsg("T", $column_ID . $i);
+				$size = serial->readMsg();
+				mysql_query("Insert into States values (0," . $new_ID . "," . $i + 1. ",0,0," . $size . ")"); 
+				$count++;
+			}
+			echo "You have successfully added " . $count . " boxes!";
 	}
-	echo "You have successfully added " . $numOfBox . " boxes!";
-
+	else
+	{
+		echo "Oops there seems to be a problem please disconnect and try again!";
+	}
 }
 
 function get_SQLarray($query){
