@@ -507,14 +507,15 @@ class phpSerial
 			{
 				do {
 					if ($i > $count) $content .= fread($this->_dHandle, ($count - $i));
-					else $content .= fread($this->_dHandle, 128);
-				} while (($i += 128) === strlen($content));
+					else $content .= fread($this->_dHandle, 4);
+				} while (($i += 4) === strlen($content));
 			}
 			else
 			{
+				
 				do {
-					$content .= fread($this->_dHandle, 4);
-				} while (($i += 4) === strlen($content));
+					$content .= fread($this->_dHandle, 128);
+				} while (($i += 128) === strlen($content));
 			}
 
 			return $content;

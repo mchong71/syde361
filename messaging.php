@@ -2,25 +2,19 @@
 include 'php_serial.php';
 
 $_THRESH = -1;
-
+	    
 class messaging
 {
 	private static $com_string = '/dev/cu.usbmodem621';
-	/* function will query the serial port until it returns a value.
-		Nothing else can happen while querying the port.
-	*/
+	private $_SERIAL;
 	
-	/*function getInstance() 
-	{
-		//the first time this class is instantiated the port will be setup. Otherwise do nothing
-		if(!messaging::$instance = instanceof self) {
-			messaging::$instance = new self();
-
-	  		//Now we "open" the serial port so we can write to it 
-		   messaging::$serial->deviceOpen();
-		}
-		
-		return messaging::$instance;
+	function messaging() { 
+		$this->_SERIAL = new phpSerial();
+		$this->_SERIAL->deviceSet('/dev/cu.usbmodem621');
+		$this->_SERIAL->confBaudRate(9600); //Baud rate: 9600 
+		$this->_SERIAL->confParity("none");  //Parity (this is the "N" in "8-N-1")
+		$this->_SERIAL->confCharacterLength(8); //Character length 
+		$this->_SERIAL->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
 	}
 	
 	/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
@@ -31,23 +25,24 @@ class messaging
 	public function readMsg()
 	{
 		global $_THRESH;
-		$serial = new phpSerial();
-		$serial->deviceSet('/dev/cu.usbmodem621');
-		$serial->confBaudRate(9600); //Baud rate: 9600 
-	 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
-	    $serial->confCharacterLength(8); //Character length 
-	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
-	    $serial->deviceOpen();
-	    $serial->serialflush();
-		do 
-		{
-			$data = $serial->readPort();
-			//$arr = preg_split("/[\s,]+/", $data);
-		} while (!preg_match("/[\s,]+/", $data));
-		
-		$arr = str_split($data);
-		$resultID = $arr[0];
 		$result = -1;
+		
+	    //if(!$this->_SERIAL->deviceOpen()) { return $result;
+	    $this->_SERIAL->deviceOpen();
+	    //$serial->serialflush();
+		$data = "";
+		$i = 0;
+		while (!preg_match("/[\s,]+/", $data))
+		{
+			$i++;
+			usleep(250);
+			$data = $this->_SERIAL->readPort();
+			//$arr = preg_split("/[\s,]+/", $data);
+		}
+		
+		return $data.$i;
+		/*$arr = str_split($data);
+		$resultID = $arr[0];
 		
 		if ($resultID == "s")
 		{
@@ -71,8 +66,8 @@ class messaging
 			}
 		}
 		
-		return $result;
-		$serial->deviceClose();
+		return $result;*/
+		$this->_SERIAL->deviceClose();
 		
 	}
 	
@@ -84,18 +79,13 @@ class messaging
 	*/
 	public function writeMsg($msgType, $compartment)
 	{
-		$serial = new phpSerial();
-		$serial->deviceSet('/dev/cu.usbmodem621');
-		$serial->confBaudRate(9600); //Baud rate: 9600 
-	 	$serial->confParity("none");  //Parity (this is the "N" in "8-N-1")
-	    $serial->confCharacterLength(8); //Character length 
-	    $serial->confStopBits(1);  //Stop bits (this is the "1" in "8-N-1") 
-	    $serial->deviceOpen();
-	    
+		
+	    //if(!$this->_SERIAL->deviceOpen()) {return false;}
+	    $this->_SERIAL->deviceOpen();
 		$str = $msgType . $compartment . chr(10);
 		
-		$serial->sendMessage($str);
-		$serial->deviceClose();
+		$this->_SERIAL->sendMessage($str);
+		$this->_SERIAL->deviceClose();
 	}
 }
 ?>
