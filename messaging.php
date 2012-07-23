@@ -40,7 +40,7 @@ class messaging
 			//$arr = preg_split("/[\s,]+/", $data);
 		}
 		
-		return $data.$i;
+		//return $data.$i;
 		$arr = str_split($data);
 		$resultID = $arr[0];
 		
@@ -58,19 +58,12 @@ class messaging
 			else 
 				$result = 1; // Unlocked
 		}
-		elseif ($resultID == "d")
-		{
-			$result = $arr;
-		}
 		elseif ($resultID == "a")
 		{
-			foreach ($i = 1; $i < Count($arr); $i++)
-			{
-				if($arr[$i] == "0")
-					$result = true; // message was confirmed
+				if($arr[1] == "0")
+					$result = 0; // message was confirmed
 				else 
-					$result = false; // message was not confirmed
-				}
+					$result = 1; // message was not confirmed
 		}
 		elseif ($resultID == "n")
 		{
@@ -78,12 +71,11 @@ class messaging
 				$result = $arr[1]; // new column was found return the number of boxes
 			else 
 				$result = -1; // new column was not found 
-				
 		}
 		elseif ($resultID == "t")
 		{
 			$result= $arr[1]; // returns the size of queried box
-		}		
+		}
 		
 		return $result;
 		$this->_SERIAL->deviceClose();
@@ -94,7 +86,7 @@ class messaging
 		U: Unlock
 		S: Sensor/Analog Status
 		L: Limit Switch Status
-		N: New Column Address
+		A: New Column Address
 	*/
 	public function writeMsg($msgType, $compartment = -1)
 	{

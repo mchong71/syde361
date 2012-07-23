@@ -21,42 +21,52 @@ function addBox() {
 	//sends message to backend telling them to expect a new locker
 	$serial->writeMsg("N");
 	$numOfBox = $serial->readMsg();
+
 	if($numOfBox != -1)
 	{
-		$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States")
-		$new_ID = $column_ID + 1;
-		// sends next available column id for addressing
-		if(assignAdd($new_ID)) // address was successfully assigned
+		$result= mysql_query("Select Column_ID from States");
+		$rows = mysql_num_rows($result);
+		mysql_free_result($rows);
+		if ($rows == 0)
+			$new_ID = 1;
+		else 
 		{
-			$count = 0;
-			for($i = 0; $i < $numOfBox; $i++)
-			{
-				// get data on each individual box. XXXXX For future could ask for limit and sensor data
-				serial->writeMsg("T", $column_ID . $i);
-				$size = serial->readMsg();
-				mysql_query("Insert into States values (0," . $new_ID . "," . $i + 1. ",0,0," . $size . ")"); 
-				$count++;
-			}
-			echo "You have successfully added " . $count . " boxes!";
+			$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States");
+			$new_ID = $column_ID['Column_ID'] + 1;
 		}
-	}
-	else
-	{
-		echo "Oops there seems to be a problem please disconnect and try again!";
+		$r = -1;
+		// sends next available column id for addressing
+		do {
+			$serial->writeMsg("A", $new_ID);
+			$r = $serial->readMsg();
+		} while ($r != 0);
+		// address was successfully assigned
+		$count = 0;
+		for($i = 0; $i < $numOfBox; $i++)
+		{
+				// get data on each individual box. XXXXX For future could ask for limit and sensor data
+				$serial->writeMsg("T", $column_ID . $i);
+				$size = $serial->readMsg();
+				mysql_query("Insert into States values (0," . $new_ID . "," . $i . ",0,0," . $size . ")"); 
+				$count++;
+		}
+		echo "You have successfully added " . $count . " boxes!";
 	}
 }
 
 // Function keeps assigning an address until confirmation is received
-function assignAdd($.new_ID)
+/*function assignAdd($new_ID)
 {
-	$serial->writeMsg("A", $.new_ID);
-	if ($serial->readMsg())
+	$serial->writeMsg("A");
+	$r = $serial->readMsg();
+	if($r== 0)
 		return true;
 	else 
-		assignAdd($.new_ID);
-}
+		return false;
+}*/
 
-function get_SQLarray($query){
+function get_SQLarray($query) 
+{
 	$result = mysql_query($query);
 	$array = mysql_fetch_array($result);
 	mysql_free_result($array);
@@ -73,6 +83,3 @@ function get_SQLarray($query){
 
 </body>
 </html>
-
-
-
