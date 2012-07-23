@@ -17,7 +17,7 @@ include 'messaging.php';
 	mysql_select_db("kiosk_map") or die(mysql_error());
 	
 function addBox() {
-	$serial = new messaging;
+	$serial = new messaging();
 	//sends message to backend telling them to expect a new locker
 	$serial->writeMsg("N");
 	$numOfBox = $serial->readMsg();
@@ -25,24 +25,35 @@ function addBox() {
 	{
 		$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States")
 		$new_ID = $column_ID + 1;
-		serial->writeMsg("A", $new_ID); // sends next available column id for addressing
-		if($serial->readMsg()) // address was successfully assigned
+		// sends next available column id for addressing
+		if(assignAdd($new_ID)) // address was successfully assigned
 		{
 			$count = 0;
 			for($i = 0; $i < $numOfBox; $i++)
 			{
-				// get data on each individual box. For future could ask for limit and sensor data
+				// get data on each individual box. XXXXX For future could ask for limit and sensor data
 				serial->writeMsg("T", $column_ID . $i);
 				$size = serial->readMsg();
 				mysql_query("Insert into States values (0," . $new_ID . "," . $i + 1. ",0,0," . $size . ")"); 
 				$count++;
 			}
 			echo "You have successfully added " . $count . " boxes!";
+		}
 	}
 	else
 	{
 		echo "Oops there seems to be a problem please disconnect and try again!";
 	}
+}
+
+// Function keeps assigning an address until confirmation is received
+function assignAdd($.new_ID)
+{
+	$serial->writeMsg("A", $.new_ID);
+	if ($serial->readMsg())
+		return true;
+	else 
+		assignAdd($.new_ID);
 }
 
 function get_SQLarray($query){
