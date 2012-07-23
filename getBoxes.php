@@ -8,6 +8,7 @@ $_BOX = -1;
 $_COL = -1;
 $_COMPARTMENT = -1;
 $_PACKINTSIZE = -1;
+$_SERIAL = new messaging();
 
 $dbhost = "localhost";
 $dbname = "kiosk_map";
@@ -17,13 +18,7 @@ $link = mysql_connect("$dbhost", "$dbuser", "$dbpass") or die (mysql_error());
 mysql_select_db("$dbname") or die(mysql_error());
 
 function get_Size($size) {
-	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE;
-	/*$dbhost = "localhost";
-	$dbname = "kiosk_map";
-	$dbuser = "root";
-	$dbpass = "root";
-	$link = mysql_connect("$dbhost", "$dbuser", "$dbpass") or die (mysql_error());
-	mysql_select_db("$dbname") or die(mysql_error());*/
+	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
 	
 	//Redo This!
 	switch($size) {
@@ -61,12 +56,10 @@ function get_Size($size) {
 	echo ($_COMPARTMENT);
 
 	// set up serial connection
-	$serialp = new messaging;
-	$serialp->writeMsg("U", $_COMPARTMENT);
-	
+	//if(!$_SERIAL->writeMsg("U", $_COMPARTMENT)) { echo "failed";}
+	//else { echo "writing worked";}
+	$_SERIAL->writeMsg("U", $_COMPARTMENT);
 	echo 'Message has been Sent!';
-	//$serialp->writeMsg("L", $_COMPARTMENT);
-	//$limStat = $serialp->readMsg();
 	packageProcessing();	
 	
 	//free the result
@@ -74,10 +67,9 @@ function get_Size($size) {
 }
 
 function doorClosed() {
-	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE;
-	$serialp = new messaging;
-	$serialp->writeMsg("S", $_COMPARTMENT);
-	$sensorData = $serialp->readMsg();
+	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
+	$_SERIAL->writeMsg("S", $_COMPARTMENT);
+	$sensorData = $_SERIAL->readMsg();
 	$pack_ID = -1;
 	
 	if($sensorData == 0) {
@@ -98,7 +90,7 @@ function doorClosed() {
 	   		$message .= 'Whole query: ' . $query;
     		die($message);
 		} else {
-			echo "\n\n\nPackage has been successfully dropped";
+			echo "</br>Package has been successfully dropped";
 		}
 		
 		mysql_free_result($result);
@@ -106,30 +98,32 @@ function doorClosed() {
 }
 
 function packageProcessing() {
-	global $_BOX, $_COL, $_COMPARTMENT;
-	$serialp = new messaging;
-	$serialp->writeMsg("L", $_COMPARTMENT);
-	$lockData = $serialp->readMsg();
+	global $_BOX, $_COL, $_COMPARTMENT, $_SERIAL;
 	
+	$_SERIAL->writeMsg("L", $_COMPARTMENT);
+	$lockData = $_SERIAL->readMsg();
+	echo $lockData;
 	if($lockData == 0) {
-		$serialp->writeMsg("U", $_COMPARTMENT);
+		$_SERIAL->writeMsg("U", $_COMPARTMENT);
 		packageProcessing();
 		echo "fail";
 	} elseif($lockData == 1) { //success in opening
 		//spam backend until door is closed
 		$limitData = 0;
 		/*while($limitData != 0) {
-			$serialp->writeMsg("L", $_COMPARTMENT);
+			$_SERIAL->writeMsg("L", $_COMPARTMENT);
 			echo "checked for limit";
 			$limitData = $serialp->readMsg();
 		}*/
 		
 		//ensure door is closed
 		if($limitData == 0) {
-			doorClosed();
+			//doorClosed();
 		} else {
 			die("DOOR CLOSE FAIL");
 		}
+	} else {
+		die("FATAL ERROR!");
 	}
 }
 		
