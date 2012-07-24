@@ -42,7 +42,7 @@ function addBox() {
 		} while ($r != 0);
 		// address was successfully assigned
 		$count = 0;
-		for($i = 0; $i < $numOfBox; $i++)
+		for($i = 1; $i <= $numOfBox; $i++)
 		{
 				// get data on each individual box. XXXXX For future could ask for limit and sensor data
 				$serial->writeMsg("T", $column_ID . $i);
