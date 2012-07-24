@@ -23,8 +23,7 @@ img#bg {
 
 </style>
 
-<body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;">
-<img src="GreenBackground.jpg" alt="background image" id="bg" />
+<body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" background="images/bgimage.png">
 
 <body>
 <div id="content">

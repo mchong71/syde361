@@ -162,8 +162,7 @@ function get_SQLarray($query)
 ?>
 
 </head>
-<body	style="background-image:url('../images/rebel.png');"> 
-	<img src="GreenBackground.jpg" alt="background image" id="bg" />
+<body	style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" background="images/bgimage.png"> 
 	<div id="content">
 	<?php getStateAlt();?>
 	</div>

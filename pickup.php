@@ -80,7 +80,7 @@ function get_SQLarray($query){
 ?>
 
 </head>
-<body style="background-color:#000; margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" >
+<body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" background="images/bgimage.png">
 	<div style="border:1px solid #fff; padding:10px;">
 		<?php pickup($_POST["packageID"]);?>
 	</div>
