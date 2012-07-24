@@ -1,5 +1,5 @@
 <html>
-
+<head>
 <style type="text/css">
 
 html, body {
@@ -22,11 +22,10 @@ img#bg {
 }
 
 </style>
-
+</head>
 <body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;">
 <img src="GreenBackground.jpg" alt="background image" id="bg" />
 
-<body>
 <div id="content">
 
 <p><b><FONT size ="16"><big>Package Retrieval</b></FONT></p></br>
@@ -40,7 +39,7 @@ img#bg {
     </br><br>
 <input type="submit" style="width:80px; height:130px;"/>
   </form>
-
+</div>
   <!-- <form action="pickup.php" method="post">
  <p><b><FONT size ="12"><CENTER> <big>PICKUP</b></big></CENTER></FONT></p>
 Please Enter your Package ID from BB: <input type="text" name="packageID" />

@@ -2,12 +2,32 @@
 <head>
 <style type="text/css">
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 0;
+}
+
+img#bg {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+}
+
 body {
  font-family: sans-serif;	
 }
 
 #cell {
 padding: 20px 10px 20px 10px;
+}
+
+#content {
+  position:relative;
+  z-index:9000;
 }
 </style>
 
@@ -143,7 +163,9 @@ function get_SQLarray($query)
 
 </head>
 <body	style="background-image:url('../images/rebel.png');"> 
-
-<?php getStateAlt();?>
+	<img src="GreenBackground.jpg" alt="background image" id="bg" />
+	<div id="content">
+	<?php getStateAlt();?>
+	</div>
 </body>
 </html>

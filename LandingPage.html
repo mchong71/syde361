@@ -1,3 +1,5 @@
+<html>
+<head>
 <style type="text/css">
 
 html, body {
@@ -5,6 +7,9 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+a {
+text-decoration: none;}
 
 img#bg {
   position:fixed;
@@ -20,7 +25,7 @@ img#bg {
 }
 
 </style>
-
+</head>
 
 <body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;">
 <img src="GreenBackground.jpg" alt="background image" id="bg" />
@@ -34,21 +39,27 @@ img#bg {
 <p> <FONT size = "6"> <CENTER>Please select one of the following options:</CENTER></FONT> </p>
 <BR>
 
-<FORM><CENTER>
-<button type="Pickup" style="height: 50px; width: 200px"><a href="PackageRetrieval.php">Pickup</a></button>
-</CENTER></FORM>
+<FORM action="PackageRetrieval.php">
+	<CENTER>
+		<button type="submit" value="Drop" style="height: 40px; width: 150px" >Drop off Package</button>
+	</CENTER>
+</FORM>
 
-<FORM><CENTER>
-<button type="Retrieve a Package" style="height: 50px; width: 200px"><a href="pickup_form.php">Retrieve Package</a></button>
-</CENTER></FORM>
+<FORM action="pickup_form.php">
+	<CENTER>
+		<button type="submit" value="Pick" style="height: 40px; width: 150px" >Retrieve Package</button>
+	</CENTER>
+</FORM>
 
-<FORM><CENTER>
-<button type="Admin" style="height: 50px; width: 200px"><a href="Admin.html"> Admin</a></button>
-</CENTER></FORM>
-
-
+<FORM action="Admin.html">
+</body>
+</html>
+	<CENTER>
+		<button type="submit" value="Admin" style="height: 40px; width: 150px" >Admin Console</button>
+	</CENTER>
+</FORM>
 
 </div>
-</div>
 
 
+</html>

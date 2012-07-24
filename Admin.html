@@ -1,5 +1,5 @@
 <html>
-
+<head>
 <style type="text/css">
 
 html, body {
@@ -7,6 +7,9 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+a {
+text-decoration: none;}
 
 img#bg {
   position:fixed;
@@ -22,20 +25,26 @@ img#bg {
 }
 
 </style>
-
+<head>
 <body style="margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;">
 <img src="GreenBackground.jpg" alt="background image" id="bg" />
 
-<body>
 <div id="content">
 
 <p><b><FONT size ="16"><big>ADMINISTRATION</b></FONT></p></br>
 
-<FORM><CENTER>
+<FORM action="table.php">
+	<CENTER>
+		<button type="submit" value="Check Status" style="height: 40px; width: 150px" > Check Status</button>
+	</CENTER>
+</FORM>
 
-<button type="Check Status" style="height: 40px; width: 150px"><a href="table.php">Check Status</a></button>
-<button type="Add Lockers" style="height: 40px; width: 150px"><a href="addBox.php">Add Lockers</button>
-<FORM> <CENTER>
+<FORM action="addBox.php">
+	<CENTER>		
+		<button type="submit" value="Add Lockers" style="height: 40px; width: 150px" >Add Lockers</button> 
+	</CENTER>
+</FORM>
 
+</div>
 </body>
 </html>
