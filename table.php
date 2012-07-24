@@ -55,7 +55,6 @@ function getStateAlt(){
 						$cellsize = 40;
 					}
 				if ($boxtrue != 0){
-				echo $z . $i;
 								echo '<tr><td id="cell" height = '.$cellsize.' style="padding-top: ' . $cellsize . '; padding-bottom: ' . $cellsize . '; border: 1px solid black; background-color: '.$color.';">';
 				echo '&nbsp;';
 				
