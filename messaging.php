@@ -1,7 +1,8 @@
 <?php
 include 'php_serial.php';
 
-$_THRESH = -1;
+$_THRESH = 100;
+$_LOCKTHRESH = 100;
 	    
 class messaging
 {
@@ -25,12 +26,12 @@ class messaging
 	*/
 	public function readMsg()
 	{
-		global $_THRESH;
+		global $_THRESH, $_LOCKTHRESH;
 		
 		if($this->_SERIAL->_ckOpened() == false) { return "fail";}
 		$this->_SERIAL->serialflush();
 		
-		$result = -1;
+		$result = -5;
 		$data = "";
 		$i = 0;
 		
@@ -41,45 +42,45 @@ class messaging
 			$i++;
 			$data .= $this->_SERIAL->readPort();
 		}
-		
-		return $data."--".$i;
-		/*$arr = str_split($data);
+
+		$arr = str_split($data);
+
 		$resultID = $arr[0];
-		
+
+
 		if ($resultID == "s")
 		{
-			if($arr[1] <= $_THRESH)
-				$result = 0; // Unfilled
-			else 
+			$value = (ord($arr[3])*256)+ord($arr[4]);
+			
+			if($value > $_THRESH)
 				$result = 1; // Filled
+			else 
+				$result = 0; // UnFilled
 		}
 		elseif ($resultID == "l")
 		{
-			if($arr[1] == "0") 
-				$result = 0; // Locked
+			$value = (ord($arr[3])*256)+ord($arr[4]);
+
+			if($value > $_LOCKTHRESH) 
+				$result = 1; // UnLocked
 			else 
-				$result = 1; // Unlocked
+				$result = 0; // locked
 		}
 		elseif ($resultID == "a")
 		{
-				if($arr[1] == "0")
-					$result = 0; // message was confirmed
-				else 
-					$result = 1; // message was not confirmed
+			$result = 1; // message was confirmed
 		}
 		elseif ($resultID == "n")
 		{
-			if($arr[1] != "0")
-				$result = $arr[1]; // new column was found return the number of boxes
-			else 
-				$result = -1; // new column was not found 
+			$iDplusCol = Array(0 => ord($arr[1]), 1 => ord($arr[2]));
+			return $iDplusCol; // new column was found return the number of boxes
 		}
 		elseif ($resultID == "t")
 		{
-			$result= $arr[1]; // returns the size of queried box
+			$result= ord($arr[3]); // returns the size of queried box
 		}
 		
-		return $result;*/		
+		return $result;
 	}
 
 	/* msgType indicates the type of message being sent
@@ -88,16 +89,11 @@ class messaging
 		L: Limit Switch Status
 		A: New Column Address
 	*/
-	public function writeMsg($msgType, $compartment = -1)
+	public function writeMsg($msgType, $col = 0, $box = 0)
 	{
 	    if($this->_SERIAL->_ckOpened() == false) { return "fail";}
-	    $str;
-	    
-	    if ($compartment == -1) {
-	    	$str .= $msgType. chr(10);
-	    } else {
-			$str = $msgType . $compartment; 
-		}
+
+	    $str = $msgType.chr($col).chr($box).chr(0).chr(0).chr(0).chr(0).chr(0).chr(0).chr(0);
 	
 		$this->_SERIAL->sendMessage($str);
 	}

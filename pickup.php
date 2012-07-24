@@ -19,7 +19,7 @@ function pickup($packageID) {
 	{
 		if(success($packageID))
 		{
-			mysql_query("Update States Set Filled = 0 Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
+			mysql_query("Update States Set Filled = 0, Package_ID = 0 Where Package_ID = '" . mysql_real_escape_string($packageID) . "'");
 			echo ("Thank you for using Buffer Box");
 		}
 	}	
@@ -48,19 +48,27 @@ function checkBox($packageID){
 // method that returns true if box is unfilled and door is closed
 function success($packageID) {
 	$box = get_SQLarray("SELECT Column_ID, Box_ID FROM States WHERE Package_ID = '" . mysql_real_escape_string($packageID) . "'");
-	$compartment = $box['Column_ID'].$box['Box_ID'];
+	$col = $box['Column_ID'];
+	$box = $box['Box_ID'];
+	
 	$serial = new messaging();
-	$serial->writeMsg("U", $compartment);
-	$serial->writeMsg("L", $compartment);
-	$limitResult = $serial->readMsg();
-	$serial->writeMsg("S", $compartment);
-	$sensorResult = $serial->readMsg();
-	if ($limitResult == 0 && $sensorResult == 1) //stats messages check
-		return True;
-	else if($limitResult == 0 && $sensorResult == 0)
+	$serial->writeMsg("U", $col, $box);
+
+	$lockResult = 1;
+	//$serial->writeMsg("S", $col, $box);
+	$sensorResult = 1;//$serial->readMsg();
+	
+	while($lockResult != 0) {
+			$serial->writeMsg("L", $col, $box);
+			$lockResult = $serial->readMsg();
+	}
+	
+	if ($lockResult == 0 && $sensorResult == 1) //stats messages check
+		return true;
+	else if($lockResult == 0 && $sensorResult == 0)
 		die("Seems as though you didn't pick up your package. Please repeat the process!");
 	
-		
+	
 }
 function get_SQLarray($query){
 	$result = mysql_query($query);

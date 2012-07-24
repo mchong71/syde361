@@ -49,22 +49,17 @@ function get_Size($size) {
 	} 
 	
 	$resultArr = mysql_fetch_array($result);
-	$_COL = 5;//$resultArr['Column_ID'];
+	$_COL = 24;//$resultArr['Column_ID'];
 	$_BOX = 1;//$resultArr['Box_ID'];
 	$_COMPARTMENT = $_COL . $_BOX;
 
 	echo $_COMPARTMENT."</br></br>";
 
-	// set up serial connection
-	if(!$_SERIAL->writeMsg("U", $_COMPARTMENT)) { echo "failed";}
-	//else { echo "writing worked";}
-	//$_SERIAL->writeMsg("U", $_COMPARTMENT);
-	//echo 'Message has been Sent!';
-	//packageProcessing();	
+	// Attempt to unlock the box
+	$_SERIAL->writeMsg("U", $_COL, $_BOX);
+	//echo "SENT!!!!";
+	packageProcessing();	
 	
-	$_SERIAL->writeMsg("L", $_COL, $_BOX);
-	$test = $_SERIAL->readMsg();
-	//echo "this is a test: " . $test;
 	//echo '<META HTTP-EQUIV="Refresh" Content="0; URL=http://localhost/ErrorPage.html">';
 	//free the result
 	mysql_free_result($result);
@@ -72,7 +67,7 @@ function get_Size($size) {
 
 /*function doorClosed() {
 	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
-	$_SERIAL->writeMsg("S", $_COMPARTMENT);
+	$_SERIAL->writeMsg("S", $_COL, $_BOX);
 	$sensorData = $_SERIAL->readMsg();
 	$pack_ID = -1;
 	
@@ -99,38 +94,37 @@ function get_Size($size) {
 		
 		mysql_free_result($result);
 	}
-}
+}*/
 
 function packageProcessing() {
 	global $_BOX, $_COL, $_COMPARTMENT, $_SERIAL;
 	
-	$_SERIAL->writeMsg("L", $_COMPARTMENT);
+	$_SERIAL->writeMsg("L", $_COL, $_BOX);
 	$lockData = $_SERIAL->readMsg();
-	echo $lockData;
+	//echo "lockdata: ".$lockData;
 	if($lockData == 0) {
-		$_SERIAL->writeMsg("U", $_COMPARTMENT);
-		packageProcessing();
-		echo "fail";
+		$_SERIAL->writeMsg("U", $_COL, $_BOX);
+		//packageProcessing();
+		die("fail");
+		
 	} elseif($lockData == 1) { //success in opening
 		//spam backend until door is closed
-		$limitData = 0;
-		/*while($limitData != 0) {
-			$_SERIAL->writeMsg("L", $_COMPARTMENT);
-			echo "checked for limit";
-			$limitData = $serialp->readMsg();
-		}*
+		while($lockData != 0) {
+			$_SERIAL->writeMsg("L", $_COL, $_BOX);
+			$lockData = $_SERIAL->readMsg();
+		}
 		
 		//ensure door is closed
-		if($limitData == 0) {
-			echo "closeys";
-			doorClosed();
+		if($lockData == 0) {
+			echo "</br>door is successfully closed: ".$lockData;
+			//doorClosed();
 		} else {
 			die("DOOR CLOSE FAIL");
 		}
 	} else {
 		die("FATAL ERROR!");
 	}
-}*/
+}
 		
 ?>
 </head>
