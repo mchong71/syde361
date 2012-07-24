@@ -68,8 +68,6 @@ function get_SQLarray($query)
 ?>
 
 </head>
-<body class="page_bg">
-
 <!-- addBox could only take in an array where the first element is the number of
 		boxes the next elements are the corresponding sizes -->
 
@@ -77,7 +75,5 @@ function get_SQLarray($query)
 	<div style="border:1px solid #fff; padding:10px;">
 		<?php addBox();?>
 	</div>
-</body>
-
 </body>
 </html>
