@@ -20,6 +20,9 @@ mysql_select_db("$dbname") or die(mysql_error());
 function get_Size($sizeORcol, $specBox = 0) {
 	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
 	
+	//HACK: This needs to be re-done. Not very good solution
+	//-----------
+	
 	//If user only enter the "size" they want
 	if($specBox==0) {
 	//Redo This!
@@ -59,10 +62,12 @@ function get_Size($sizeORcol, $specBox = 0) {
 	$resultArr = mysql_fetch_array($result);
 	
 	
-	} else {
+	} else { //if user inputs specific column and box
 		$_COL = $sizeORcol;
 		$_BOX = $specBox;
 	}
+	
+	//----------------
 	
 	
 	$_COMPARTMENT = $_COL . $_BOX;
