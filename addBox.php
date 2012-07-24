@@ -5,10 +5,6 @@
 
 include 'messaging.php';
 
-
-//$sizeArr = array(0 => 1, 1 => 2, 2 => 3, 3 => 1, 4 => 2, 5 => 3);
-
-//Get COM Port
 	$dbhost = "localhost";
 	$dbname = "kiosk_map";
 	$dbuser = "root";
@@ -18,52 +14,49 @@ include 'messaging.php';
 	
 function addBox() {
 	$serial = new messaging();
-	//sends message to backend telling them to expect a new locker
-	$serial->writeMsg("N");
-	$numOfBox = $serial->readMsg();
+	$colDetails = $serial->readMsg();
 
-	if($numOfBox != -1)
+	$numCols = $colDetails[1];
+	$currId = $colDetails[0];
+	
+	if($numCols > 0)
 	{
 		$result= mysql_query("Select Column_ID from States");
 		$rows = mysql_num_rows($result);
-		mysql_free_result($rows);
-		if ($rows == 0)
+		$new_ID = 0;
+		
+		if ($rows == 0) 
+		{
 			$new_ID = 1;
+		}
 		else 
 		{
 			$column_ID = get_SQLarray("Select MAX(Column_ID) as Column_ID from States");
-			$new_ID = $column_ID['Column_ID'] + 1;
+			$newID = $column_ID['Column_ID'] + 1;
 		}
+		
+		mysql_free_result($rows);
+		
 		$r = -1;
 		// sends next available column id for addressing
-		do {
-			$serial->writeMsg("A", $new_ID);
+		while($r != 1) {
+			$serial->writeMsg(chr(4), $currId, $newID);
 			$r = $serial->readMsg();
-		} while ($r != 0);
+		}
+
 		// address was successfully assigned
 		$count = 0;
-		for($i = 1; $i <= $numOfBox; $i++)
+		for($i = 1; $i <= $numCols; $i++)
 		{
 				// get data on each individual box. XXXXX For future could ask for limit and sensor data
-				$serial->writeMsg("T", $column_ID . $i);
+				$serial->writeMsg("T", $column_ID, $i);
 				$size = $serial->readMsg();
-				mysql_query("Insert into States values (0," . $new_ID . "," . $i . ",0,0," . $size . ")"); 
+				mysql_query("Insert into States values (0," . $newID . "," . $i . ",0,0," . $size . ")"); 
 				$count++;
 		}
 		echo "You have successfully added " . $count . " boxes!";
 	}
 }
-
-// Function keeps assigning an address until confirmation is received
-/*function assignAdd($new_ID)
-{
-	$serial->writeMsg("A");
-	$r = $serial->readMsg();
-	if($r== 0)
-		return true;
-	else 
-		return false;
-}*/
 
 function get_SQLarray($query) 
 {
@@ -79,7 +72,12 @@ function get_SQLarray($query)
 
 <!-- addBox could only take in an array where the first element is the number of
 		boxes the next elements are the corresponding sizes -->
-<?php addBox();?>
+
+<body style="background-color:#000; margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" >
+	<div style="border:1px solid #fff; padding:10px;">
+		<?php addBox();?>
+	</div>
+</body>
 
 </body>
 </html>
