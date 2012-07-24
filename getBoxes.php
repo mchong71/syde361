@@ -17,11 +17,13 @@ $dbpass = "root";
 $link = mysql_connect("$dbhost", "$dbuser", "$dbpass") or die (mysql_error());
 mysql_select_db("$dbname") or die(mysql_error());
 
-function get_Size($size) {
+function get_Size($sizeORcol, $specBox = 0) {
 	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
 	
+	//If user only enter the "size" they want
+	if($specBox==0) {
 	//Redo This!
-	switch($size) {
+	switch($sizeORcol) {
 		case 'S':
 			$_PACKINTSIZE = 0;
 			break;
@@ -48,16 +50,28 @@ function get_Size($size) {
     	die($message);
 	} 
 	
+	if(mysql_num_rows($result) == 0)
+		die("There are no boxes of that type available!");
+	else {
+		$_COL = $resultArr['Column_ID'];
+		$_BOX = $resultArr['Box_ID'];
+	}
 	$resultArr = mysql_fetch_array($result);
-	$_COL = 24;//$resultArr['Column_ID'];
-	$_BOX = 1;//$resultArr['Box_ID'];
+	
+	
+	} else {
+		$_COL = $sizeORcol;
+		$_BOX = $specBox;
+	}
+	
+	
 	$_COMPARTMENT = $_COL . $_BOX;
-
-	echo $_COMPARTMENT."</br></br>";
+	
+	//echo $_COMPARTMENT."</br></br>";
 
 	// Attempt to unlock the box
 	$_SERIAL->writeMsg("U", $_COL, $_BOX);
-	//echo "SENT!!!!";
+	
 	packageProcessing();	
 	
 	//echo '<META HTTP-EQUIV="Refresh" Content="0; URL=http://localhost/ErrorPage.html">';
@@ -131,7 +145,11 @@ function packageProcessing() {
 <body style="background-color:#000; margin:0 auto; text-align=center;padding:50px;color:#fff;font:12px Arial;" >
 	<div style="border:1px solid #fff; padding:10px;">
 		<?php
-			get_Size($_POST["pSize"]);
+			if($_POST["pSize"]=="") {
+				get_Size($_POST["column"], $_POST["box"]);
+			} else {
+				get_Size($_POST["pSize"]);
+			}
 		?>
 	</div>
 </body>
