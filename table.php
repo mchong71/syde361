@@ -1,5 +1,15 @@
 <html>
 <head>
+<style type="text/css">
+
+body {
+ font-family: sans-serif;	
+}
+
+#cell {
+padding: 20px 10px 20px 10px;
+}
+</style>
 
 <?php 
 	$dbhost = "localhost";
@@ -9,14 +19,74 @@
 	$link = mysql_connect("localhost", "root", "root") or die (mysql_error());
 	mysql_select_db("kiosk_map") or die(mysql_error());
 	
-function getState()
+function getStateAlt(){
+	$columnD = get_SQLarray("Select distinct Count(Column_ID) as countOfCol from States");
+	$numcol = $columnD['countOfCol'];
+	$column = get_SQLarray("Select Max(Column_ID) as Column_ID from States");
+	$box = get_SQLarray("Select Max(Box_ID) as Box_ID from States");
+	echo '<table style="color: white; border-collapse: collapse; width: 80%; margin-left: auto; margin-right: auto; margin-top: 40px; font-size: large"><tr VALIGN = TOP>';
+	$count = 0;
+	$width = 100/($numcol);
+	for ($z = 1; $z <= $column['Column_ID']; $z++){
+		$colresult1 = mysql_query("Select Column_ID from States where Column_ID = ". $z);
+		$coltrue1 = mysql_num_rows($colresult1);
+		if ($coltrue1 != 0){
+			echo '<td width="' . floor($width) . '%"><table id="'.$z.  '" style="color: white; border-collapse: collapse; width: 100%; margin-left: auto; margin-right: auto; margin-top: 40px; font-size: large">';
+			for ($i = 1; $i <= $box['Box_ID']; $i++){
+				$filled;
+				$color;
+				$coltrue = mysql_num_rows($colresult);
+				$boxresult = mysql_query("Select Box_ID from States where Box_ID = " . $i . " AND Column_ID = " . $z);
+				$boxtrue = mysql_num_rows($boxresult);
+				$package = get_SQLarray("Select Filled, Size from States where Column_ID = " .$z . " AND Box_ID = " . $i);
+				if ($package['Filled'] == 1){
+					$filled = "Y";
+					$color = "#0BA14B";
+				} else {
+					$filled = "N";
+					$color = "#FF312D";
+				}
+				$cellsize;
+					if ($package['Size'] == 0){
+						$cellsize = 20;
+					} if ($package['Size'] == 1){
+						$cellsize = 30;
+					} if ($package['Size'] >= 2){
+						$cellsize = 40;
+					}
+				if ($boxtrue != 0){
+				echo $z . $i;
+								echo '<tr><td id="cell" height = '.$cellsize.' style="padding-top: ' . $cellsize . '; padding-bottom: ' . $cellsize . '; border: 1px solid black; background-color: '.$color.';">';
+				echo '&nbsp;';
+				
+				echo "</td></tr>";
+				}	
+
+			} 
+					echo '</table></td>';
+
+		}
+	}
+	
+	
+	echo '</tr></table>';
+}	
+	
+/*function getState()
 {
 	$column = get_SQLarray("Select Max(Column_ID) as Column_ID from States");
 	$box = get_SQLarray("Select Max(Box_ID) as Box_ID from States");
-	echo "<table><tr>";
-	$count;
+	echo '<table style="color: white; border-collapse: collapse; width: 80%; margin-left: auto; margin-right: auto; margin-top: 40px; font-size: large">';
+	$count = 0;
+	for($z = 1; $z <= $column['Column_ID']; $z++){
+		$colresult1 = mysql_query("Select Column_ID from States where Column_ID = ". $z);
+		$coltrue1 = mysql_num_rows($colresult1);
+		if ($coltrue1 != 0){
+			echo '<th>Column ' . $z . '</th>';
+		}
+	}
 	for ($i = 1; $i <= $box['Box_ID']; $i++)
-	{
+	{	
 		echo "<tr>";
 			for($j = 1; $j <= $column['Column_ID']; $j++)
 			{
@@ -32,22 +102,35 @@ function getState()
 				if($package['Filled'] == 1)
 				{
 					$filled = "Y";
-					$color = "green";
+					$color = "#0BA14B";
 				}
 				else 
 				{
 					$filled = "N";
-					$color = "red";
+					$color = "#FF312D";
 				}
-				if ($coltrue != 0 && $boxtrue != 0)
-					 echo '<td style="background-color: ' . $color . '">C:' . $j . " B:" . $i . " S:". $package['Size'] . " ";
-				else 
-						echo "<td>&nbsp;</td>";																		
+				if ($coltrue != 0 && $boxtrue != 0){
+					// echo '<td id="cell" style=" border: 1px solid black; background-color: ' . $color . '">C:' . $j . " B:" . $i . " S:". $package['Size'] . " ";
+					echo '<td id="cell" style=" border: 1px solid black; background-color: ' . $color . '">'; // S: '. $package['Size'] . " ";
+					
+					if ($package['Size'] == 0){
+						echo '&#9632;</td>';
+					} if ($package['Size'] == 1){
+						echo '&#9632;&#9632;</td>';
+					} if ($package['Size'] == 2){
+						echo '&#9632;&#9632;&#9632;</td>';
+					}
+				}
+				else if ($coltrue != 0)
+					echo '<td id="cell" style="text-align: center; background-color: #C4D5AB; color: grey" >Empty</td>';	
+				//else 
+						//echo '<td id="cell" style="background-color: #C4D5AB; color: grey" >Empty</td>';																		
 			}
+			$count = 1;
 		echo "</tr>";
 	}
-	echo "</tr></table>";
-}
+	echo "</table>";
+}*/
 	
 function get_SQLarray($query) 
 {
@@ -60,7 +143,8 @@ function get_SQLarray($query)
 ?>
 
 </head>
-<body>
-<?php getState();?>
+<body	style="background-image:url('../images/rebel.png');"> 
+
+<?php getStateAlt();?>
 </body>
 </html>
