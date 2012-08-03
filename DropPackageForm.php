@@ -29,7 +29,7 @@ img#bg {
 
 <p><b><FONT size ="16"><big>Drop Off Package</b></FONT></p></br>
 
-  <form action="getBoxes.php" method="post">
+  <form action="DropPackage.php" method="post">
     <b>Box Size (S/M/L):</b>
     </br><input type="text" name="pSize" style="width:150px; height:20px;" /><br><br>
     </br><b>Enter Specific Box:</b>
