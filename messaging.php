@@ -1,17 +1,17 @@
 <?php
 include 'php_serial.php';
 
+// These will need to be set for the hardware configuration.
 $_THRESH = 100;
 $_LOCKTHRESH = 100;
 	    
 class messaging
 {
-	private static $com_string = '/dev/cu.usbmodem621';
 	private $_SERIAL;
 	
 	function messaging() { 
 		$this->_SERIAL = new phpSerial();
-		$this->_SERIAL->deviceSet('/dev/cu.usbmodem621');
+		$this->_SERIAL->deviceSet('/dev/cu.usbmodem621'); //This will need to be changed for different OS
 		$this->_SERIAL->confBaudRate(9600); //Baud rate: 9600 
 		$this->_SERIAL->confParity("none");  //Parity (this is the "N" in "8-N-1")
 		$this->_SERIAL->confCharacterLength(8); //Character length 
@@ -22,7 +22,9 @@ class messaging
 	/* ReadMsg returs a result based on the writeMsg sent. Results expected are:
 		s: returns 2 bytes + null, MSB, forms unsigned num: 0-1023 threshold value
 		l: returns 2 bytes + null, MSB, forms unsigned num: 0-1023 anything not zero is open
-		d: returns byte array of box sizes
+		a: returns if box is successfully addressed
+		n: returns that there is a new column and gives the number of boxes.
+		t: returns the size of the box queried
 	*/
 	public function readMsg()
 	{
@@ -35,9 +37,12 @@ class messaging
 		$data = "";
 		$i = 0;
 		
+		//This regex looks for any whitespace characters (\n, char(10), etc.)
 		while (!preg_match("/[\s,]+/", $data))
 		{
-			if($i >=75000) {break;}
+			if($i >=75000) {
+				return "failed to read data. Value of loop: ".$i;
+			}
 		
 			$i++;
 			$data .= $this->_SERIAL->readPort();
@@ -45,17 +50,21 @@ class messaging
 
 		$arr = str_split($data);
 
+		// First byte of incoming message determines what type it is.
 		$resultID = $arr[0];
 
-
+		// after type is determined these statements extract relevant data from rest of the message.
 		if ($resultID == "s")
 		{
 			$value = (ord($arr[3])*256)+ord($arr[4]);
+			return $value;
 			
-			if($value > $_THRESH)
+			//Uncomment this when senors are ready for use.
+			
+			/*if($value > $_THRESH)
 				$result = 1; // Filled
 			else 
-				$result = 0; // UnFilled
+				$result = 0; // UnFilled*/
 		}
 		elseif ($resultID == "l")
 		{
@@ -93,6 +102,8 @@ class messaging
 	{
 	    if($this->_SERIAL->_ckOpened() == false) { return "fail";}
 
+		// Pass in the col and box to the first two bytes in the message. This is the standard
+		// message format we are using.
 	    $str = $msgType.chr($col).chr($box).chr(0).chr(0).chr(0).chr(0).chr(0).chr(0).chr(0);
 	
 		$this->_SERIAL->sendMessage($str);
