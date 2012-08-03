@@ -15,7 +15,8 @@ include 'messaging.php';
 function addBox() {
 	$serial = new messaging();
 	$colDetails = $serial->readMsg();
-
+	//echo var_dump($colDetails);
+	
 	$numCols = $colDetails[1];
 	$currId = $colDetails[0];
 	
@@ -23,11 +24,11 @@ function addBox() {
 	{
 		$result= mysql_query("Select Column_ID from States");
 		$rows = mysql_num_rows($result);
-		$new_ID = 0;
+		$newID = 0;
 		
 		if ($rows == 0) 
 		{
-			$new_ID = 1;
+			$newID = 0;
 		}
 		else 
 		{
@@ -49,13 +50,16 @@ function addBox() {
 		for($i = 1; $i <= $numCols; $i++)
 		{
 				// get data on each individual box. XXXXX For future could ask for limit and sensor data
-				$serial->writeMsg("T", $column_ID, $i);
+				$serial->writeMsg("T", $newID, $i);
 				$size = $serial->readMsg();
 				mysql_query("Insert into States values (0," . $newID . "," . $i . ",0,0," . $size . ")"); 
 				$count++;
 		}
 		echo "You have successfully added " . $count . " boxes!";
+	} else {
+		echo "failed";
 	}
+	
 }
 
 function get_SQLarray($query) 

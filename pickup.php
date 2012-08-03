@@ -67,9 +67,8 @@ function success($packageID) {
 		return true;
 	else if($lockResult == 0 && $sensorResult == 0)
 		die("Seems as though you didn't pick up your package. Please repeat the process!");
-	
-	
 }
+
 function get_SQLarray($query){
 	$result = mysql_query($query);
 	if(!$result)

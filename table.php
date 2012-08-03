@@ -61,10 +61,10 @@ function getStateAlt(){
 				$package = get_SQLarray("Select Filled, Size from States where Column_ID = " .$z . " AND Box_ID = " . $i);
 				if ($package['Filled'] == 1){
 					$filled = "Y";
-					$color = "#0BA14B";
+					$color = "#FF312D";
 				} else {
 					$filled = "N";
-					$color = "#FF312D";
+					$color = "#0BA14B";
 				}
 				$cellsize;
 					if ($package['Size'] == 0){

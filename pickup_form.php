@@ -29,7 +29,7 @@ img#bg {
 <div id="content">
 
 <form action="pickup.php" method="post">
- <p><b><FONT size ="12"> <big>Pickup</b></big></FONT></p>
+ <p><b><FONT size ="12"> <big>Retrieve Package</b></big></FONT></p>
 Please Enter your Package ID from BB: <input type="text" name="packageID" />
 <input type="submit" />
 
