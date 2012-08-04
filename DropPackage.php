@@ -118,8 +118,10 @@ function packageProcessing() {
 function doorClosed() {
 
 	global $_BOX, $_COL, $_COMPARTMENT, $_PACKINTSIZE, $_SERIAL;
-	//$_SERIAL->writeMsg("S", $_COL, $_BOX);
-	$sensorData = 1;
+	$_SERIAL->writeMsg("S", $_COL, $_BOX);
+	$sensorData = $_SERIAL->readMsg();
+	//$sensorData = 1;
+	echo $sensorData;
 	$pack_ID = -1;
 	
 	if($sensorData == 0) {

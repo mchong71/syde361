@@ -55,17 +55,17 @@ function success($packageID) {
 	$serial->writeMsg("U", $col, $box);
 
 	$lockResult = 1;
-	//$serial->writeMsg("S", $col, $box);
-	$sensorResult = 1;//$serial->readMsg();
+	$serial->writeMsg("S", $col, $box);
+	$sensorResult = $serial->readMsg();
 	
 	while($lockResult != 0) {
 			$serial->writeMsg("L", $col, $box);
 			$lockResult = $serial->readMsg();
 	}
 	
-	if ($lockResult == 0 && $sensorResult == 1) //stats messages check
+	if ($lockResult == 0 && $sensorResult == 0) //stats messages check
 		return true;
-	else if($lockResult == 0 && $sensorResult == 0)
+	else if($lockResult == 0 && $sensorResult == 1)
 		die("Seems as though you didn't pick up your package. Please repeat the process!");
 }
 

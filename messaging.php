@@ -57,20 +57,17 @@ class messaging
 		if ($resultID == "s")
 		{
 			$value = (ord($arr[3])*256)+ord($arr[4]);
-			return $value;
-			
-			//Uncomment this when senors are ready for use.
-			
-			/*if($value > $_THRESH)
+
+			if($value > $_THRESH)
 				$result = 1; // Filled
 			else 
-				$result = 0; // UnFilled*/
+				$result = 0; // UnFilled
 		}
 		elseif ($resultID == "l")
 		{
 			$value = (ord($arr[3])*256)+ord($arr[4]);
 
-			if($value > $_LOCKTHRESH) 
+			if($value < $_LOCKTHRESH) 
 				$result = 1; // UnLocked
 			else 
 				$result = 0; // locked

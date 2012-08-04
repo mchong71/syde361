@@ -19,7 +19,7 @@ function addBox() {
 	
 	$numCols = $colDetails[1];
 	$currId = $colDetails[0];
-	
+	echo $numCols . "/".$colDetails."/";
 	if($numCols > 0)
 	{
 		$result= mysql_query("Select Column_ID from States");
